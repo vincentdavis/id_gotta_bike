@@ -1,0 +1,208 @@
+[
+  {
+    "riderId": 1234,
+    "name": "Fred",
+    "gender": "M",
+    "country": "gb",
+    "height": 174,
+    "weight": 80,
+    "zpCategory": "B",
+    "zpFTP": 276,
+    "power": {
+      "wkg5": 7.3125,
+      "wkg15": 6.8625,
+      "wkg30": 6.425,
+      "wkg60": 5.675,
+      "wkg120": 4.8625,
+      "wkg300": 4.2375,
+      "wkg1200": 3.6,
+      "w5": 585,
+      "w15": 549,
+      "w30": 514,
+      "w60": 454,
+      "w120": 389,
+      "w300": 339,
+      "w1200": 288,
+      "CP": 265.58667780978317,
+      "AWC": 29216.095538160473,
+      "compoundScore": 1315.1170774647887,
+      "powerRating": 1473.7114820283293
+    },
+    "race": {
+      "last": {
+        "rating": 1212.7647154855088,
+        "date": null,
+        "mixed": {
+          "category": "Platinum",
+          "number": 6
+        }
+      },
+      "current": {
+        "rating": 1212.7647154855088,
+        "date": 1733135400,
+        "mixed": {
+          "category": "Platinum",
+          "number": 6
+        }
+      },
+      "max30": {
+        "rating": 1246.0123103279052,
+        "date": 1731427200,
+        "mixed": {
+          "category": "Platinum",
+          "number": 6
+        }
+      },
+      "max90": {
+        "rating": 1310.7400789462085,
+        "date": 1730025600,
+        "mixed": {
+          "category": "Amethyst",
+          "number": 5
+        }
+      },
+      "finishes": 38,
+      "dnfs": 7,
+      "wins": 1,
+      "podiums": 2
+    },
+    "handicaps": {
+      "profile": {
+        "flat": 17.162277860915562,
+        "rolling": 86.46894784330989,
+        "hilly": 77.26312830105644,
+        "mountainous": 3.642874304577518
+      }
+    },
+    "phenotype": {
+      "scores": {
+        "sprinter": 74.2,
+        "puncheur": 77.3,
+        "pursuiter": 75.4,
+        "climber": 67.5,
+        "tt": 77.4
+      },
+      "value": "Time Trialist",
+      "bias": 3.0400000000000063
+    }
+  },
+  {
+    "riderId": 2345,
+    "name": "Paul",
+    "gender": "M",
+    "country": "gb-sct",
+    "height": 178,
+    "weight": 89.5,
+    "zpCategory": "B",
+    "zpFTP": 370,
+    "power": {
+      "wkg5": 11.0391,
+      "wkg15": 10.6816,
+      "wkg30": 9.7654,
+      "wkg60": 6.9585,
+      "wkg120": 5.8137,
+      "wkg300": 5.0615,
+      "wkg1200": 4.4358,
+      "w5": 988,
+      "w15": 956,
+      "w30": 874,
+      "w60": 620,
+      "w120": 518,
+      "w300": 453,
+      "w1200": 397,
+      "CP": 374.9512595622951,
+      "AWC": 27819.718569638066,
+      "compoundScore": 1992.4768146975264,
+      "powerRating": 2615.2075672396095
+    },
+    "race": {
+      "last": {
+        "rating": 2176.591828018839,
+        "date": null,
+        "mixed": {
+          "category": "Ruby",
+          "number": 2
+        }
+      },
+      "current": {
+        "rating": 2176.591828018839,
+        "date": 1729621800,
+        "mixed": {
+          "category": "Ruby",
+          "number": 2
+        }
+      },
+      "max30": {
+        "rating": 0
+      },
+      "max90": {
+        "rating": 2193.4998928478826,
+        "date": 1726078200,
+        "mixed": {
+          "category": "Ruby",
+          "number": 2
+        }
+      },
+      "finishes": 19,
+      "dnfs": 0,
+      "wins": 4,
+      "podiums": 8
+    },
+    "handicaps": {
+      "profile": {
+        "flat": 19.12777742109615,
+        "rolling": -1.4943576110232721,
+        "hilly": 0.9962384073487068,
+        "mountainous": 1.3548842339943374
+      }
+    },
+    "phenotype": {
+      "scores": {
+        "sprinter": 99.5,
+        "puncheur": 93.7,
+        "pursuiter": 94.1,
+        "climber": 93.9,
+        "tt": 99.6
+      },
+      "value": "Time Trialist",
+      "bias": 3.4399999999999977
+    }
+  },
+  {
+    "riderId": 3456,
+    "name": "Same",
+    "gender": "M",
+    "country": "gb",
+    "height": 178,
+    "weight": 91,
+    "zpCategory": "D",
+    "zpFTP": 231,
+    "power": null,
+    "race": {
+      "last": {
+        "rating": 0
+      },
+      "current": {
+        "rating": 0
+      },
+      "max30": {
+        "rating": 0
+      },
+      "max90": {
+        "rating": 0
+      },
+      "finishes": 0,
+      "dnfs": 0,
+      "wins": 0,
+      "podiums": 0
+    },
+    "handicaps": {
+      "profile": {
+        "flat": -37.00954828009311,
+        "rolling": -28.196143078355604,
+        "hilly": 0,
+        "mountainous": 31.309537559582424
+      }
+    }
+  }
+]
