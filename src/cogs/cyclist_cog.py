@@ -168,6 +168,16 @@ class CyclistCog(commands.Cog):
                 logfire.error(f"Unexpected error while getting profile link: CODE:my_profile_3 {e!s}")
                 await ctx.respond("❌ An Unknown error occurred: CODE:my_profile_3", ephemeral=True)
 
+    @discord.slash_command(name="help", description="Get help using the Gotta.Bike Bot")
+    async def help(self, ctx: discord.ApplicationContext):
+        """Get help using the Gotta.Bike Bot."""
+        with logfire.span("CyclistCog: help"):
+            await ctx.respond(
+                "Need help with the Gotta.Bike Bot? Check out our help page: "
+                "https://app-dev.gotta.bike/discord/discord_help/"
+            )
+            logfire.info(f"Sent help link to {ctx.author}")
+
 
 def setup(bot):
     """Pycord calls to setup the cog."""

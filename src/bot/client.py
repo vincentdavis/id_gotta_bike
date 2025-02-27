@@ -38,8 +38,8 @@ def init_bot():
             logfire.error(f"Failed to sync commands: {e}")
         logfire.info("Bot is now ready!")
 
-    @bot.slash_command()
-    async def id_gotta_bike_info(ctx):
+    @bot.slash_command(name="about")
+    async def about(ctx):
         """Information about the  ID Discord Gotta Bike bot. and app.gotta.bike."""
         with logfire.span("id_gotta_bike_info"):
             logfire.info(f"Guild ID: {ctx.guild.id}")
@@ -76,11 +76,11 @@ def init_bot():
         dm_link = "https://discord.com/users/588793677317537811"
 
         await ctx.response.send_message(
-            f"Hello, {name}, This is the ID_Discrod_Gotta_Bike Bot!\n"
-            f"The source code is available at https://github.com/id-gotta-bike/discord-gotta-bike\n"
+            f"Hello, {name}, This is the Gotta.Bike Bot!\n"
+            f"The source code is available at <https://github.com/id-gotta-bike/discord-gotta-bike>\n"
             f"Your running this on {ctx.guild.name}: {ctx.guild.id} Guild/Server\n"
             f"This the {os.getenv('LOGFIRE_ENVIRONMENT')} environment\n"
-            f"If you have question, issues... DM me, Vincent Davis at {dm_link}\n"
+            f"If you have question, issues... DM me, Vincent Davis at <{dm_link}>\n"
             f"API server test response: {api_server_responded}\n",
             ephemeral=True,
         )
