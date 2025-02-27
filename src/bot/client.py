@@ -77,6 +77,7 @@ def init_bot():
 
         await ctx.response.send_message(
             f"Hello, {name}, This is the Gotta.Bike Bot!\n"
+            f"Website can be found at <https://app.gotta.bike>\n"
             f"The source code is available at <https://github.com/id-gotta-bike/discord-gotta-bike>\n"
             f"Your running this on {ctx.guild.name}: {ctx.guild.id} Guild/Server\n"
             f"This the {os.getenv('LOGFIRE_ENVIRONMENT')} environment\n"
