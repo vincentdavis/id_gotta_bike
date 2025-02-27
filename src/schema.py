@@ -36,8 +36,8 @@ class DiscordGuildJoinUpdatePost(BaseModel):
         return v
 
     class Config:  # noqa: D106
-        json_encoders = {datetime: lambda v: v.isoformat()}
-        json_schema_extra = {
+        json_encoders = {datetime: lambda v: v.isoformat()}  # noqa: RUF012
+        json_schema_extra = {  # noqa: RUF012
             "example": {
                 "guild_id": "123456789012345678",
                 "guild_name": "My Discord Server",
@@ -87,7 +87,6 @@ class LocalGetMagicLinkResponse(BaseModel):
 
 
 class Cyclist(BaseModel):
-    uuid: UUID
     first_name: str
     last_name: str
     usac_id: int | None = None

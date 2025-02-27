@@ -141,6 +141,8 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
     """
     with logfire.span("lookup_cyclist_api"):
         async with httpx.AsyncClient() as client:
+            from discord import ValidationError
+
             try:
                 response = await client.get(
                     f"{os.getenv('API_URL')}/cyclists",
@@ -157,9 +159,10 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                     #     logfire.info(f"item: {i}")
                     data["status_code"] = 200
                     data["status_message"] = "OK"
+                    logfire.info(f"Cyclist data: {data.keys()}")
 
                 else:  # TODO, should have better plan for different error codes.
-                    logfire.error(f"Status code: {response.status_code}, {response}")
+                    logfire.error(f"Status code not 200: {response.status_code}, {response}")
                     try:
                         error_detail = response.json().get("detail", "Unknown error 1")
                     except Exception as e:
@@ -171,9 +174,18 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                         "cyclist": None,
                         "zracing": None,
                     }
+                logfire.info("Validate the data")
+                v_data = CyclistLookUp.model_validate(data)
+                return v_data
 
-                return CyclistLookUp.model_validate(data)
-
+            except ValidationError as e:
+                logfire.error(f"ValidationError: {e!s}")
+                data = {
+                    "status_code": response.status_code,
+                    "status_message": "Invalid input",
+                    "cyclist": None,
+                    "zracing": None,
+                }
             except httpx.ConnectTimeout:
                 logfire.error("API request timed out")
                 data = {
