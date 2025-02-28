@@ -4,7 +4,7 @@ import logfire
 from discord import ButtonStyle, Color, Embed, ui
 from discord.ext import commands, tasks
 
-from src.api import format_handicaps, format_phenotype, get_magic_link, lookup_cyclist
+from src.api import api_lookup_athlete, format_handicaps, format_phenotype, get_magic_link
 
 
 class CyclistCog(commands.Cog):
@@ -37,12 +37,46 @@ class CyclistCog(commands.Cog):
         logfire.info("Doing very useful stuff...")
         print("doing very useful stuff.")
 
-    @discord.slash_command()
-    async def cyclist_lookup(self, ctx, user: discord.Member):
+    @discord.slash_command(name="lookup_athlete", description="Look by member or zwid")
+    async def lookup_athlete(
+        self,
+        ctx,
+        member: discord.Option(discord.Member, description="Select a Discord user", required=False) = None,
+        zwift_id: discord.Option(int, description="Enter a Zwift ID number", required=False) = None,
+    ):
         """Look up a user in the registration database."""
         with logfire.span("CyclistCog.cyclist_lookup"):
-            logfire.info(f"Looking up user: {user}")
-            data = await lookup_cyclist(discord_id=str(user.id))
+            try:
+                if member is None and zwift_id is None:
+                    logfire.info("No user or Zwift ID number provided.")
+                    await ctx.response.send_message(
+                        "You must provide either a Discord user or a Zwift ID number.", ephemeral=True
+                    )
+                    return
+                elif member is not None and zwift_id is not None:
+                    logfire.info("Both user and Zwift ID number provided.")
+                    await ctx.response.send_message(
+                        "You must provide either a Discord user OR a Zwift ID number, not both.", ephemeral=True
+                    )
+
+                logfire.info(f"Looking up user: {member}, {zwift_id}")
+                if member is not None:
+                    logfire.info(f"Member: {member.id}")
+                    member_id = str(member.id)
+                else:
+                    member_id = ""
+
+                data = await api_lookup_athlete(discord_id=member_id, zwift_id=zwift_id)
+                logfire.info(
+                    f"Success message: {data.status_code}, {data.status_message}, cyclist: {data.athlete}, zracing: {data.zracing}"
+                )
+            except Exception as e:
+                logfire.error(f"Unexpected error while looking up cyclist: {e!s}")
+                await ctx.response.send_message(
+                    "An unexpected error occurred while looking up the cyclist.", ephemeral=True
+                )
+                return
+
             if data.status_code != 200:
                 logfire.error(f"success message: {data.status_code}, {data.status_message}")
                 await ctx.response.send_message(data.status_message, ephemeral=True)
@@ -53,33 +87,39 @@ class CyclistCog(commands.Cog):
                         color=discord.Color.blue(),
                         timestamp=discord.utils.utcnow(),  # Add timestamp to embed
                     )
-                    embed.add_field(name="Discord", value=user.mention, inline=True)
 
-                    cyclist = data.cyclist.model_dump()
-                    # Add all cyclist fields to the embed, excluding any null values
-                    # TODO: Seems like the name is not returned because it is a property maybe
-                    fields = [
-                        "name",
-                        "zwift",
-                        "zwiftpower",
-                        "strava",
-                    ]
-                    # Add all cyclist fields to the embed, excluding any null values
-                    logfire.info("Start adding fields to embed:")
-                    for field in fields:
-                        # Format the field name to be more readable
-                        logfire.info(f"Field: {field}:{cyclist.get(field, 'failed to get field')}")
-                        field_name = field.replace("_", " ").title()
-                        embed.add_field(name=field_name, value=f"{cyclist.get(field, '_')}", inline=True)
+                    if member is not None:
+                        embed.add_field(name="Discord", value=member.mention, inline=True)
 
-                    #  Add zwift verified status
-                    zwift_verified_status = cyclist.get("ids", {}).get("zwift_verified", None)
-                    if zwift_verified_status is not None:
-                        logfire.info(f"Add zwift verified status: {cyclist.get('ids')}")
-                        embed.add_field(name="Zwift Verified", value=cyclist["zwift_verified"], inline=True)
-                    else:
-                        embed.add_field(name="Zwift Status", value="Not Verified", inline=True)
-                    logfire.info("Finished adding Cyclist fields to embed")
+                    if zwift_id is not None:
+                        embed.add_field(name="Zwift ID", value=zwift_id)
+
+                    if data.athlete is not None:
+                        athlete = data.athlete.model_dump()
+                        # Add all cyclist fields to the embed, excluding any null values
+                        # TODO: Seems like the name is not returned because it is a property maybe
+                        fields = [
+                            "name",
+                            "zwift",
+                            "zwiftpower",
+                            "strava",
+                        ]
+                        # Add all cyclist fields to the embed, excluding any null values
+                        logfire.info("Start adding fields to embed:")
+                        for field in fields:
+                            # Format the field name to be more readable
+                            logfire.info(f"Field: {field}:{athlete.get(field, 'failed to get field')}")
+                            field_name = field.replace("_", " ").title()
+                            embed.add_field(name=field_name, value=f"{athlete.get(field, '_')}", inline=True)
+
+                        #  Add zwift verified status
+                        zwift_verified_status = athlete.get("ids", {}).get("zwift_verified", None)
+                        if zwift_verified_status is not None:
+                            logfire.info(f"Add zwift verified status: {athlete.get('ids')}")
+                            embed.add_field(name="Zwift Verified", value=athlete["zwift_verified"], inline=True)
+                        else:
+                            embed.add_field(name="Zwift Status", value="Not Verified", inline=True)
+                        logfire.info("Finished adding Cyclist fields to embed")
 
                     # Add ZR record
                     if data.zracing is not None:
@@ -108,11 +148,11 @@ class CyclistCog(commands.Cog):
                             logfire.info(f"zr_rocord might be none: {zr_record}")
                             logfire.error(f"Error formatting ZR record: {e!s}")
                             # embed.add_field(name="ZR Record", value="Error formatting ZR record", inline=True)
-
-                    logfire.info("Add roles to embed")
-                    embed.add_field(
-                        name="Roles", value=str([r.name for r in user.roles if r is not None]), inline=False
-                    )
+                    if member is not None:
+                        logfire.info("Add roles to embed")
+                        embed.add_field(
+                            name="Roles", value=str([r.name for r in member.roles if r is not None]), inline=False
+                        )
                     await ctx.response.send_message(embed=embed, ephemeral=True)
                 except Exception as e:
                     logfire.error(f"Unexpected error while looking up cyclist: {e!s}")
@@ -124,7 +164,6 @@ class CyclistCog(commands.Cog):
     async def my_profile(self, ctx: discord.ApplicationContext):
         """Get a link to manage your cyclist profile."""
         with logfire.span("CyclistCog: my_profile"):
-            logfire
             logfire.info(f"Getting profile link for {ctx.author}:{ctx.author.id}")
             try:
                 data = await get_magic_link(

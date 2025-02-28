@@ -123,17 +123,17 @@ class ZRacing(BaseModel):
         extra = "allow"
 
 
-class CyclistLookUp(BaseModel):
+class LookUpAthlete(BaseModel):  # noqa: D101
     status_code: int
     status_message: str
-    cyclist: Cyclist | None = None
+    athlete: Cyclist | None = None
     zracing: ZRacing | None = None
 
-    class Config:
+    class Config:  # noqa: D106
         extra = "allow"
 
 
-class CyclistResponseDiscord(BaseModel):
+class AthleteResponseDiscord(BaseModel):  # noqa: D101
     uuid: UUID
     first_name: str
     last_name: str

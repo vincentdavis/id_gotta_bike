@@ -3,8 +3,9 @@ import urllib
 
 import httpx
 import logfire
+from discord import ValidationError
 
-from src.schema import CyclistLookUp, DiscordMagicLinkResponse, LocalGetMagicLinkResponse
+from src.schema import DiscordMagicLinkResponse, LocalGetMagicLinkResponse, LookUpAthlete
 
 
 def format_handicaps(zr_record) -> str:
@@ -127,11 +128,12 @@ async def get_magic_link(
             return data
 
 
-async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
+async def api_lookup_athlete(discord_id: str = "", zwift_id: str = "") -> LookUpAthlete:
     """Look up cyclist information using the API.
 
     Args:
         discord_id: Discord ID of the user to look up
+        zwift_id: ZRacing riderId of the user to look up. If provided, discord_id will be ignored.
 
     Returns:
         tuple: (success, result)
@@ -139,19 +141,22 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
             - result: Dict containing cyclist data if successful, error message if not
 
     """
-    with logfire.span("lookup_cyclist_api"):
+    with logfire.span("lookup_api"):
         async with httpx.AsyncClient() as client:
-            from discord import ValidationError
-
+            params = dict()
+            if zwift_id:
+                params["zwift_id"] = zwift_id
+            if discord_id:
+                params["discord_id"] = discord_id
+            logfire.info(f"API Lookup Params: {params}")
             try:
                 response = await client.get(
-                    f"{os.getenv('API_URL')}/cyclists",
-                    params={"discord_id": discord_id},
+                    f"{os.getenv('API_URL')}/lookup_athlete/",
+                    params=params,
                     timeout=10.0,
                 )
 
                 logfire.info(f"Response: {response.status_code}")
-
                 if response.status_code == 200:
                     logfire.info("Found cyclist information")
                     data = response.json()
@@ -175,7 +180,7 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                         "zracing": None,
                     }
                 logfire.info("Validate the data")
-                v_data = CyclistLookUp.model_validate(data)
+                v_data = LookUpAthlete.model_validate(data)
                 return v_data
 
             except ValidationError as e:
@@ -186,6 +191,7 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                     "cyclist": None,
                     "zracing": None,
                 }
+                return LookUpAthlete.model_validate(data)
             except httpx.ConnectTimeout:
                 logfire.error("API request timed out")
                 data = {
@@ -194,7 +200,7 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                     "cyclist": None,
                     "zracing": None,
                 }
-                return CyclistLookUp.model_validate(data)
+                return LookUpAthlete.model_validate(data)
             except httpx.HTTPStatusError as e:
                 logfire.error(f"API error: Status {e.response.status_code}, Response: {e.response.text}")
                 data = {
@@ -203,7 +209,7 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                     "cyclist": None,
                     "zracing": None,
                 }
-                return CyclistLookUp.model_validate(data)
+                return LookUpAthlete.model_validate(data)
             except httpx.RequestError as e:
                 logfire.error(f"Request failed: {e!s}")
                 data = {
@@ -212,7 +218,7 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                     "cyclist": None,
                     "zracing": None,
                 }
-                return CyclistLookUp.model_validate(data)
+                return LookUpAthlete.model_validate(data)
             except Exception as e:
                 logfire.error(f"Unexpected error while looking up cyclist: {e!s}")
                 data = {
@@ -222,4 +228,4 @@ async def lookup_cyclist(discord_id: str) -> CyclistLookUp:
                     "zracing": None,
                 }
                 logfire.error(f"Error: {data}")
-                return CyclistLookUp.model_validate(data)
+                return LookUpAthlete.model_validate(data)
