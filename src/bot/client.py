@@ -74,15 +74,31 @@ def init_bot():
 
         name = ctx.author.name
         dm_link = "https://discord.com/users/588793677317537811"
+        website_link = "https://app.gotta.bike"
+        invite_link = "https://discord.gg/vY3XXwdnmt"
+        dev_help = "https://app.gotta.bike/development/development_help/"
+        github_link = "https://github.com/id-gotta-bike/discord-gotta-bike"
+        install_link = "https://discord.com/oauth2/authorize?client_id=1317880120173924434"
 
         await ctx.response.send_message(
-            f"Hello, {name}, This is the Gotta.Bike Bot!\n"
-            f"Website can be found at <https://app.gotta.bike>\n"
-            f"The source code is available at <https://github.com/id-gotta-bike/discord-gotta-bike>\n"
-            f"Your running this on {ctx.guild.name}: {ctx.guild.id} Guild/Server\n"
-            f"This the {os.getenv('LOGFIRE_ENVIRONMENT')} environment\n"
-            f"If you have question, issues... DM me, Vincent Davis at <{dm_link}>\n"
-            f"API server test response: {api_server_responded}\n",
+            f"Hello, {name}, this is the Gotta.Bike Bot!\n"
+            f"Your running at Guild: id, {ctx.guild.name}: {ctx.guild.id}\n"
+            f"----\n"
+            f"Website: <{website_link}>\n"
+            f"GOTTA.BIKE Discord Server: <{invite_link}>\n"
+            f"Bot Install link: <{install_link}>\n"
+            f"----\n"
+            f"Contributions, feedback, suggestions and beta testers are welcome\n"
+            f"If you would like to help, here is how: <{dev_help}>\n"
+            f"If you want to contribute, please visit the project on GitHub:\n"
+            f"<{github_link}>\n"
+            f"Contact me, Vincent Davis, at <{dm_link}>\n"
+            f"----\n"
+            f"Diagnostics"
+            f"Logging {os.getenv('LOGFIRE_ENVIRONMENT')} environment\n"
+            f"API server test response: {api_server_responded}\n"
+            f" server_version: {data.get('server_version', 'N/A')}\n"
+            f" Other: {data.get('other', 'N/A')}",
             ephemeral=True,
         )
 
